@@ -1,6 +1,63 @@
 (function($) {
     'use strict';
 
+    // Smooth Scrolling for Navigation Links
+    $('.navbar-nav .nav-link, .mobile-nav .mean-nav ul li a, .learn-btn, a[href^="#"]').on('click', function(e) {
+        // Only handle links that start with #
+        if (this.hash !== '') {
+            e.preventDefault();
+            
+            const hash = this.hash;
+            const target = $(hash);
+            
+            if (target.length) {
+                // Calculate offset based on screen size
+                let offset = 80; // Default offset for desktop
+                if ($(window).width() <= 991) {
+                    offset = 60; // Smaller offset for mobile
+                }
+                
+                $('html, body').animate({
+                    scrollTop: target.offset().top - offset // Responsive offset for navbar
+                }, 800, 'swing'); // 800ms duration with swing easing
+                
+                // Update active nav link (only for navigation links, not all anchor links)
+                if ($(this).hasClass('nav-link') || $(this).closest('.mean-nav').length) {
+                    $('.navbar-nav .nav-link, .mobile-nav .mean-nav ul li a').removeClass('active');
+                    $(this).addClass('active');
+                }
+                
+                // Close mobile menu if open
+                if ($('.mobile-nav .mean-nav').hasClass('mean-nav-open')) {
+                    $('.mobile-nav .mean-nav').removeClass('mean-nav-open');
+                    $('.mobile-nav .meanmenu-reveal').removeClass('meanclose');
+                }
+            }
+        }
+    });
+
+    // Update active nav link on scroll
+    $(window).on('scroll', function() {
+        let current = '';
+        const sections = $('section, div[id]');
+        const navLinks = $('.navbar-nav .nav-link, .mobile-nav .mean-nav ul li a');
+        
+        sections.each(function() {
+            const sectionTop = $(this).offset().top - 100;
+            const sectionHeight = $(this).height();
+            if ($(window).scrollTop() >= sectionTop && $(window).scrollTop() < sectionTop + sectionHeight) {
+                current = $(this).attr('id');
+            }
+        });
+        
+        navLinks.each(function() {
+            $(this).removeClass('active');
+            if ($(this).attr('href') === '#' + current) {
+                $(this).addClass('active');
+            }
+        });
+    });
+
     // Mean Menu JS
     jQuery('.mean-menu').meanmenu({ 
         meanScreenWidth: "991"
@@ -237,6 +294,18 @@
 
     // WOW JS
     new WOW().init();
+
+    // Floating WhatsApp Icon Enhancement
+    $('.whatsapp-btn').on('click', function() {
+        // Add click animation
+        $(this).addClass('clicked');
+        setTimeout(function() {
+            $('.whatsapp-btn').removeClass('clicked');
+        }, 300);
+        
+        // Optional: Track click analytics
+        console.log('WhatsApp button clicked');
+    });
 
     // Preloader JS
     jQuery(window).on('load',function(){
